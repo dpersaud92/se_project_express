@@ -1,32 +1,69 @@
 const User = require("../models/user");
+const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors");
 
-// Controller to get all users
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(500).send({ message: `Error: ${err.message}` }));
+    .catch((err) => {
+      console.error(
+        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
+      );
+
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+      }
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
+      }
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "Resource not found" });
+      }
+
+      res
+        .status(SERVER_ERROR)
+        .send({ message: "An error occurred on the server" });
+    });
 };
 
-// Controller to get a single user by ID
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => {
-      if (user) {
-        res.send(user);
+    .orFail()
+    .then((user) => res.send(user))
+    .catch((err) => {
+      console.error(
+        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
+      );
+
+      if (err.name === "CastError") {
+        res.status(BAD_REQUEST).send({ message: "Invalid user ID" });
+      } else if (err.name === "DocumentNotFoundError") {
+        res.status(NOT_FOUND).send({ message: "User not found" });
       } else {
-        res.status(404).send({ message: "User not found" });
+        res
+          .status(SERVER_ERROR)
+          .send({ message: "An error occurred on the server" });
       }
-    })
-    .catch(() => res.status(400).send({ message: "Invalid user ID" }));
+    });
 };
 
-// Controller to create a new user
 module.exports.createUser = (req, res) => {
   const { name, avatar } = req.body;
 
   User.create({ name, avatar })
     .then((user) => res.status(201).send(user))
-    .catch((err) =>
-      res.status(400).send({ message: `Error creating user: ${err.message}` })
-    );
+    .catch((err) => {
+      console.error(
+        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
+      );
+
+      if (err.name === "ValidationError") {
+        res
+          .status(BAD_REQUEST)
+          .send({ message: "Invalid data for user creation" });
+      } else {
+        res
+          .status(SERVER_ERROR)
+          .send({ message: "An error occurred on the server" });
+      }
+    });
 };

@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const usersRouter = require("./routes/users"); // Import the users router
+const usersRouter = require("./routes/users");
+const itemsRouter = require("./routes/clothingItems");
 
 const { PORT = 3001 } = process.env;
 
@@ -11,18 +12,16 @@ mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db", {
   useUnifiedTopology: true,
 });
 
-app.use(express.json()); // middleware to handle JSON bodies
+app.use(express.json());
 
-// Temporary middleware to simulate authentication (add this if needed)
 app.use((req, res, next) => {
-  req.user = { _id: "YOUR_TEST_USER_ID" }; // Replace with your test user ID
+  req.user = { _id: "680dba3069c120544c236ada" };
   next();
 });
 
-// Mount usersRouter to the /users path
 app.use("/users", usersRouter);
+app.use("/items", itemsRouter);
 
-// Catch-all for invalid routes
 app.use((req, res) => {
   res.status(404).send({ message: "Requested resource not found" });
 });
