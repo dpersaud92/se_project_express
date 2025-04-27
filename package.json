@@ -1,4 +1,8 @@
 {
+  "name": "se_project_express",
+  "version": "1.0.0",
+  "description": "Backend for the WTWR app project",
+  "author": "Dwayne Persaud",
   "dependencies": {
     "express": "^4.21.2",
     "mongoose": "^8.14.0",
