@@ -1,5 +1,7 @@
-const mongoose = require("mongoose");
 const express = require("express");
+const mongoose = require("mongoose");
+const usersRouter = require("./routes/users");
+const itemsRouter = require("./routes/clothingItems");
 
 const { PORT = 3001 } = process.env;
 
@@ -10,11 +12,15 @@ mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db", {
   useUnifiedTopology: true,
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello from Express and MongoDB!");
+app.use(express.json());
+
+app.use(usersRouter);
+app.use(itemsRouter);
+
+app.use((req, res) => {
+  res.status(404).send({ message: "Requested resource not found" });
 });
 
-// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
