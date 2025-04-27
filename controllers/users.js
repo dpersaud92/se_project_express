@@ -9,16 +9,6 @@ module.exports.getUsers = (req, res) => {
         `Error ${err.name} with the message ${err.message} has occurred while executing the code`
       );
 
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
-      }
-      if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
-      }
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "Resource not found" });
-      }
-
       res
         .status(SERVER_ERROR)
         .send({ message: "An error occurred on the server" });

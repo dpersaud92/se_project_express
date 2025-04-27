@@ -5,10 +5,7 @@ module.exports.getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
     .catch((err) => {
-      console.error(
-        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-      );
-
+      console.error(err);
       res
         .status(SERVER_ERROR)
         .send({ message: "An error occurred on the server" });
@@ -22,10 +19,7 @@ module.exports.createItem = (req, res) => {
   ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send(item))
     .catch((err) => {
-      console.error(
-        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-      );
-
+      console.error(err);
       if (err.name === "ValidationError") {
         res
           .status(BAD_REQUEST)
@@ -43,23 +37,16 @@ module.exports.deleteItem = (req, res) => {
     .orFail()
     .then((item) => res.send(item))
     .catch((err) => {
-      console.error(
-        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-      );
-
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
-      }
+      console.error(err);
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
+        res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+      } else if (err.name === "DocumentNotFoundError") {
+        res.status(NOT_FOUND).send({ message: "Item not found" });
+      } else {
+        res
+          .status(SERVER_ERROR)
+          .send({ message: "An error occurred on the server" });
       }
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "Resource not found" });
-      }
-
-      res
-        .status(SERVER_ERROR)
-        .send({ message: "An error occurred on the server" });
     });
 };
 
@@ -72,23 +59,16 @@ module.exports.likeItem = (req, res) => {
     .orFail()
     .then((item) => res.send(item))
     .catch((err) => {
-      console.error(
-        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-      );
-
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
-      }
+      console.error(err);
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
+        res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+      } else if (err.name === "DocumentNotFoundError") {
+        res.status(NOT_FOUND).send({ message: "Item not found" });
+      } else {
+        res
+          .status(SERVER_ERROR)
+          .send({ message: "An error occurred on the server" });
       }
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "Resource not found" });
-      }
-
-      res
-        .status(SERVER_ERROR)
-        .send({ message: "An error occurred on the server" });
     });
 };
 
@@ -101,22 +81,15 @@ module.exports.dislikeItem = (req, res) => {
     .orFail()
     .then((item) => res.send(item))
     .catch((err) => {
-      console.error(
-        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-      );
-
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
-      }
+      console.error(err);
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid ID format" });
+        res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+      } else if (err.name === "DocumentNotFoundError") {
+        res.status(NOT_FOUND).send({ message: "Item not found" });
+      } else {
+        res
+          .status(SERVER_ERROR)
+          .send({ message: "An error occurred on the server" });
       }
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "Resource not found" });
-      }
-
-      res
-        .status(SERVER_ERROR)
-        .send({ message: "An error occurred on the server" });
     });
 };
