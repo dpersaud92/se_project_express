@@ -1,11 +1,14 @@
 {
   "name": "se_project_express",
-  "type": "commonjs",
   "version": "1.0.0",
   "description": "Backend for the WTWR app project",
   "author": "Dwayne Persaud",
-  "eslintConfig": {
-    "root": true
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "lint": "eslint . --fix"
   },
   "dependencies": {
     "express": "^4.21.2",
@@ -14,17 +17,14 @@
     "validator": "^13.15.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.25.1",
     "eslint": "^8.46.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.10.0",
+    "eslint-import-resolver-node": "^0.3.9",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-node": "^11.1.0",
     "nodemon": "^3.1.10",
     "prettier": "^2.8.8"
-  },
-  "scripts": {
-    "lint": "npx eslint .",
-    "start": "node app.js",
-    "dev": "nodemon app.js"
   }
 }

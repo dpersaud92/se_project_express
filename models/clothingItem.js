@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
+import mongoose from "mongoose";
+import validator from "validator";
 
 const clothingItemSchema = new mongoose.Schema({
   name: {
@@ -41,4 +41,6 @@ const clothingItemSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("ClothingItem", clothingItemSchema);
+const ClothingItem = mongoose.model("ClothingItem", clothingItemSchema);
+
+export default ClothingItem;

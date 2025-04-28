@@ -1,7 +1,7 @@
-const ClothingItem = require("../models/clothingItem");
-const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors");
+import ClothingItem from "../models/clothingItem.js";
+import { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } from "../utils/errors.js";
 
-module.exports.getItems = (req, res) => {
+export const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
     .catch((err) => {
@@ -12,7 +12,7 @@ module.exports.getItems = (req, res) => {
     });
 };
 
-module.exports.createItem = (req, res) => {
+export const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
 
@@ -32,7 +32,7 @@ module.exports.createItem = (req, res) => {
     });
 };
 
-module.exports.deleteItem = (req, res) => {
+export const deleteItem = (req, res) => {
   ClothingItem.findByIdAndDelete(req.params.itemId)
     .orFail()
     .then((item) => res.send(item))
@@ -50,7 +50,7 @@ module.exports.deleteItem = (req, res) => {
     });
 };
 
-module.exports.likeItem = (req, res) => {
+export const likeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
@@ -72,7 +72,7 @@ module.exports.likeItem = (req, res) => {
     });
 };
 
-module.exports.dislikeItem = (req, res) => {
+export const dislikeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },

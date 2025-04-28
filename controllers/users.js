@@ -1,21 +1,20 @@
-const User = require("../models/user");
-const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors");
+import User from "../models/user.js";
+import { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } from "../utils/errors.js";
 
-module.exports.getUsers = (req, res) => {
+export const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
     .catch((err) => {
       console.error(
         `Error ${err.name} with the message ${err.message} has occurred while executing the code`
       );
-
       res
         .status(SERVER_ERROR)
         .send({ message: "An error occurred on the server" });
     });
 };
 
-module.exports.getUser = (req, res) => {
+export const getUser = (req, res) => {
   User.findById(req.params.userId)
     .orFail()
     .then((user) => res.send(user))
@@ -23,7 +22,6 @@ module.exports.getUser = (req, res) => {
       console.error(
         `Error ${err.name} with the message ${err.message} has occurred while executing the code`
       );
-
       if (err.name === "CastError") {
         res.status(BAD_REQUEST).send({ message: "Invalid user ID" });
       } else if (err.name === "DocumentNotFoundError") {
@@ -36,7 +34,7 @@ module.exports.getUser = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
+export const createUser = (req, res) => {
   const { name, avatar } = req.body;
 
   User.create({ name, avatar })
@@ -45,7 +43,6 @@ module.exports.createUser = (req, res) => {
       console.error(
         `Error ${err.name} with the message ${err.message} has occurred while executing the code`
       );
-
       if (err.name === "ValidationError") {
         res
           .status(BAD_REQUEST)

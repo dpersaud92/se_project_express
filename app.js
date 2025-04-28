@@ -1,9 +1,8 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const { NOT_FOUND } = require("http-status-codes"); // move this import UP
+import express from "express";
+import mongoose from "mongoose";
+import { NOT_FOUND } from "http-status-codes";
 
-const usersRouter = require("./routes/users");
-const itemsRouter = require("./routes/clothingItems");
+import routes from "./routes/index.js";
 
 const { PORT = 3001 } = process.env;
 
@@ -21,8 +20,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/users", usersRouter);
-app.use("/items", itemsRouter);
+app.use(routes);
 
 app.use((req, res) => {
   res.status(NOT_FOUND).send({ message: "Requested resource not found" });
