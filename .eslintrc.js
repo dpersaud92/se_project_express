@@ -5,6 +5,8 @@ module.exports = {
     commonjs: true,
     es2021: true,
   },
-  extends: ["eslint:recommended"],
-  rules: {},
+  extends: "airbnb-base",
+  rules: {
+    "no-underscore-dangle": ["error", { allow: ["_id"] }],
+  },
 };
