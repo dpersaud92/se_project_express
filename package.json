@@ -1,8 +1,12 @@
 {
   "name": "se_project_express",
+  "type": "commonjs",
   "version": "1.0.0",
   "description": "Backend for the WTWR app project",
   "author": "Dwayne Persaud",
+  "eslintConfig": {
+    "root": true
+  },
   "dependencies": {
     "express": "^4.21.2",
     "http-status-codes": "^2.3.0",
@@ -14,6 +18,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-node": "^11.1.0",
     "nodemon": "^3.1.10",
     "prettier": "^2.8.8"
   },

@@ -1,10 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const { NOT_FOUND } = require("http-status-codes"); // move this import UP
+
 const usersRouter = require("./routes/users");
 const itemsRouter = require("./routes/clothingItems");
 
 const { PORT = 3001 } = process.env;
-const { NOT_FOUND } = require("http-status-codes"); // <-- ADD THIS LINE
 
 const app = express();
 
