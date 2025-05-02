@@ -1,5 +1,5 @@
 import ClothingItem from "../models/clothingItem.js";
-import { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } from "../utils/errors.js";
+import { BAD_REQUEST, NOT_FOUND, SERVER_ERROR , FORBIDDEN } from "../utils/errors.js";
 
 export const getItems = (req, res) => {
   ClothingItem.find({})
@@ -33,9 +33,17 @@ export const createItem = (req, res) => {
 };
 
 export const deleteItem = (req, res) => {
-  ClothingItem.findByIdAndDelete(req.params.itemId)
+  ClothingItem.findById(req.params.itemId)
     .orFail()
-    .then((item) => res.send(item))
+    .then((item) => {
+      if (item.owner.toString() !== req.user._id) {
+        return res.status(FORBIDDEN).send({ message: "Access denied" });
+      }
+
+      return ClothingItem.findByIdAndDelete(req.params.itemId).then(() => {
+        res.send({ message: "Item deleted" });
+      });
+    })
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
@@ -43,9 +51,7 @@ export const deleteItem = (req, res) => {
       } else if (err.name === "DocumentNotFoundError") {
         res.status(NOT_FOUND).send({ message: "Item not found" });
       } else {
-        res
-          .status(SERVER_ERROR)
-          .send({ message: "An error occurred on the server" });
+        res.status(SERVER_ERROR).send({ message: "Server error" });
       }
     });
 };
