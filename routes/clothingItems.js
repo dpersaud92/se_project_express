@@ -6,13 +6,15 @@ import {
   likeItem,
   dislikeItem,
 } from "../controllers/clothingItems.js";
+import auth from "../middlewares/auth.js";
 
 const router = Router();
 
 router.get("/", getItems);
-router.post("/", createItem);
-router.delete("/:itemId", deleteItem);
-router.put("/:itemId/likes", likeItem);
-router.delete("/:itemId/likes", dislikeItem);
+
+router.post("/", auth, createItem);
+router.delete("/:itemId", auth, deleteItem);
+router.put("/:itemId/likes", auth, likeItem);
+router.delete("/:itemId/likes", auth, dislikeItem);
 
 export default router;
