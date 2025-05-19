@@ -1,17 +1,18 @@
-import { Router } from "express";
+import express from "express";
+import multer from "multer";
 import {
-  getItems,
   createItem,
+  getItems,
   deleteItem,
   likeItem,
   dislikeItem,
 } from "../controllers/clothingItems.js";
 import auth from "../middlewares/auth.js";
 
-const router = Router();
+const router = express.Router();
+const upload = multer(); // handles multipart/form-data in memory
 
 router.get("/", getItems);
-
 router.post("/", auth, createItem);
 router.delete("/:itemId", auth, deleteItem);
 router.put("/:itemId/likes", auth, likeItem);

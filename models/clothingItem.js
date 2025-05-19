@@ -23,6 +23,11 @@ const clothingItemSchema = new mongoose.Schema({
       message: "You must enter a valid URL",
     },
   },
+  isDarkBackground: {
+    type: Boolean,
+    default: false,
+  }, // ✅ this comma was missing
+
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
