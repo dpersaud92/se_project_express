@@ -5,7 +5,6 @@ import {
   SERVER_ERROR,
   FORBIDDEN,
 } from "../utils/errors.js";
-import sharp from "sharp";
 
 export const getItems = (req, res) => {
   ClothingItem.find({})
