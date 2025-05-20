@@ -18,27 +18,6 @@ export const getItems = (req, res) => {
     });
 };
 
-const calculateBrightness = async (imageBuffer) => {
-  const { data, info } = await sharp(imageBuffer)
-    .resize(50) // Resize to reduce processing time
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-
-  const totalPixels = info.width * info.height;
-  let colorSum = 0;
-
-  for (let i = 0; i < data.length; i += 3) {
-    const r = data[i];
-    const g = data[i + 1];
-    const b = data[i + 2];
-    const avg = (r + g + b) / 3;
-    colorSum += avg;
-  }
-
-  const brightness = colorSum / totalPixels;
-  return brightness < 128; // return true if background is dark
-};
-
 export const createItem = async (req, res) => {
   try {
     const { name, weather, imageUrl } = req.body;

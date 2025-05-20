@@ -10,7 +10,6 @@ import {
 import auth from "../middlewares/auth.js";
 
 const router = express.Router();
-const upload = multer(); // handles multipart/form-data in memory
 
 router.get("/", getItems);
 router.post("/", auth, createItem);
