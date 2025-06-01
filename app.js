@@ -24,6 +24,7 @@ app.use(express.json());
 app.use(requestLogger);
 
 app.get("/crash-test", () => {
+  /* global setTimeout */
   setTimeout(() => {
     throw new Error("Server will crash now");
   }, 0);
