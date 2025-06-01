@@ -35,3 +35,9 @@ The goal of this project is to develop hands-on experience in:
 
 Before committing your code, edit the `sprint.txt` file in the root folder and input your current sprint number (e.g., 12 or 13).  
 This ensures the correct test suite is selected during automated GitHub Actions testing.
+
+## Deployed URLs
+
+- Frontend: http://mywtwr.crabdance.com
+- Frontend (www): http://www.mywtwr.crabdance.com
+- Backend (API): http://api.mywtwr.crabdance.com:3001
