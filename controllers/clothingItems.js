@@ -58,6 +58,8 @@ export const deleteItem = (req, res, next) => {
         next(new BadRequestError("Invalid item ID"));
       } else if (err.name === "DocumentNotFoundError") {
         next(new NotFoundError("Item not found"));
+      } else if (err instanceof ForbiddenError) {
+        next(err);
       } else {
         next(new InternalServerError());
       }
