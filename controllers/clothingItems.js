@@ -1,16 +1,15 @@
 import ClothingItem from "../models/clothingItem.js";
 import {
-  BAD_REQUEST,
-  NOT_FOUND,
-  SERVER_ERROR,
-  FORBIDDEN,
+  BadRequestError,
+  NotFoundError,
+  ForbiddenError,
+  InternalServerError,
 } from "../utils/errors.js";
-import { InternalServerError } from "../utils/errors.js";
 
 export const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
-    .catch((err) => next(new InternalServerError()));
+    .catch(() => next(new InternalServerError()));
 };
 
 export const createItem = async (req, res, next) => {
