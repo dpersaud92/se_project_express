@@ -1,27 +1,22 @@
 import { celebrate, Joi, Segments } from "celebrate";
-import validator from "validator";
 
-const validateURL = (value, helpers) => {
-  if (validator.isURL(value)) {
-    return value;
-  }
-  return helpers.message("Invalid URL format");
-};
-
-// ✅ Validation for user signup
-export const validateSignup = celebrate({
+export const validateItemCreation = celebrate({
   [Segments.BODY]: Joi.object().keys({
-    name: Joi.string().min(2).max(30).required(),
-    avatar: Joi.string().custom(validateURL),
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
+    name: Joi.string().required(),
+    weather: Joi.string().valid("hot", "warm", "cold").required(),
+    imageUrl: Joi.string().uri().required(),
   }),
 });
 
-// ✅ Validation for user signin
-export const validateSignin = celebrate({
+export const validateItemId = celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    itemId: Joi.string().hex().length(24).required(),
+  }),
+});
+
+export const validateUserUpdate = celebrate({
   [Segments.BODY]: Joi.object().keys({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
+    name: Joi.string().required(),
+    avatar: Joi.string().uri().required(),
   }),
 });

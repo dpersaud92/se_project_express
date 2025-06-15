@@ -5,28 +5,24 @@ import {
   SERVER_ERROR,
   FORBIDDEN,
 } from "../utils/errors.js";
+import { InternalServerError } from "../utils/errors.js";
 
-export const getItems = (req, res) => {
+export const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
-    .catch((err) => {
-      console.error(err);
-      res
-        .status(SERVER_ERROR)
-        .send({ message: "An error occurred on the server" });
-    });
+    .catch((err) => next(new InternalServerError()));
 };
 
-export const createItem = async (req, res) => {
+export const createItem = async (req, res, next) => {
   try {
     const { name, weather, imageUrl } = req.body;
     const owner = req.user._id;
 
     if (!imageUrl) {
-      return res.status(BAD_REQUEST).send({ message: "Image URL is required" });
+      throw new BadRequestError("Image URL is required");
     }
 
-    const isDarkBackground = false; // or calculate if needed
+    const isDarkBackground = false;
 
     const item = await ClothingItem.create({
       name,
@@ -38,25 +34,20 @@ export const createItem = async (req, res) => {
 
     res.status(201).send(item);
   } catch (err) {
-    console.error(err);
     if (err.name === "ValidationError") {
-      res
-        .status(BAD_REQUEST)
-        .send({ message: "Invalid data for clothing item creation" });
+      next(new BadRequestError("Invalid data for clothing item creation"));
     } else {
-      res
-        .status(SERVER_ERROR)
-        .send({ message: "An error occurred on the server" });
+      next(new InternalServerError());
     }
   }
 };
 
-export const deleteItem = (req, res) => {
+export const deleteItem = (req, res, next) => {
   ClothingItem.findById(req.params.itemId)
     .orFail()
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
-        return res.status(FORBIDDEN).send({ message: "Access denied" });
+        throw new ForbiddenError("Access denied");
       }
 
       return ClothingItem.findByIdAndDelete(req.params.itemId).then(() => {
@@ -64,18 +55,17 @@ export const deleteItem = (req, res) => {
       });
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === "CastError") {
-        res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+        next(new BadRequestError("Invalid item ID"));
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(NOT_FOUND).send({ message: "Item not found" });
+        next(new NotFoundError("Item not found"));
       } else {
-        res.status(SERVER_ERROR).send({ message: "Server error" });
+        next(new InternalServerError());
       }
     });
 };
 
-export const likeItem = (req, res) => {
+export const likeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
@@ -84,20 +74,17 @@ export const likeItem = (req, res) => {
     .orFail()
     .then((item) => res.send(item))
     .catch((err) => {
-      console.error(err);
       if (err.name === "CastError") {
-        res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+        next(new BadRequestError("Invalid item ID"));
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(NOT_FOUND).send({ message: "Item not found" });
+        next(new NotFoundError("Item not found"));
       } else {
-        res
-          .status(SERVER_ERROR)
-          .send({ message: "An error occurred on the server" });
+        next(new InternalServerError());
       }
     });
 };
 
-export const dislikeItem = (req, res) => {
+export const dislikeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
@@ -106,15 +93,12 @@ export const dislikeItem = (req, res) => {
     .orFail()
     .then((item) => res.send(item))
     .catch((err) => {
-      console.error(err);
       if (err.name === "CastError") {
-        res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+        next(new BadRequestError("Invalid item ID"));
       } else if (err.name === "DocumentNotFoundError") {
-        res.status(NOT_FOUND).send({ message: "Item not found" });
+        next(new NotFoundError("Item not found"));
       } else {
-        res
-          .status(SERVER_ERROR)
-          .send({ message: "An error occurred on the server" });
+        next(new InternalServerError());
       }
     });
 };

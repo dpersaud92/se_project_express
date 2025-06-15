@@ -38,6 +38,5 @@ This ensures the correct test suite is selected during automated GitHub Actions 
 
 ## Deployed URLs
 
-- Frontend: http://mywtwr.crabdance.com
 - Frontend (www): http://www.mywtwr.crabdance.com
 - Backend (API): http://api.mywtwr.crabdance.com:3001

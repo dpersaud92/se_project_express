@@ -1,13 +1,16 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import { NOT_FOUND } from "http-status-codes";
-import routes from "./routes/index.js";
 import helmet from "helmet";
+import { errors } from "celebrate";
+import dotenv from "dotenv";
+
+import routes from "./routes/index.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import { requestLogger, errorLogger } from "./middlewares/logger.js";
-import { errors } from "celebrate";
+import { NotFoundError } from "./utils/errors.js";
 
+dotenv.config();
 const { PORT = 3001 } = process.env;
 
 const app = express();
@@ -24,7 +27,6 @@ app.use(express.json());
 app.use(requestLogger);
 
 app.get("/crash-test", () => {
-  /* global setTimeout */
   setTimeout(() => {
     throw new Error("Server will crash now");
   }, 0);
@@ -32,14 +34,14 @@ app.get("/crash-test", () => {
 
 app.use(routes);
 
-app.use(errorLogger);
-
-app.use((req, res) => {
-  res.status(NOT_FOUND).send({ message: "Requested resource not found" });
+app.use((req, res, next) => {
+  next(new NotFoundError("Requested resource not found"));
 });
 
-app.use(errors());
-app.use(errorHandler);
+app.use(errorLogger);
+
+app.use(errors()); // Celebrate errors
+app.use(errorHandler); // Custom centralized error handler
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);

@@ -3,15 +3,14 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import { JWT_SECRET } from "../utils/config.js";
 import {
-  BAD_REQUEST,
-  NOT_FOUND,
-  SERVER_ERROR,
-  CONFLICT,
-  UNAUTHORIZED,
+  BadRequestError,
+  NotFoundError,
+  ConflictError,
+  UnauthorizedError,
+  InternalServerError,
 } from "../utils/errors.js";
 
-// Create new user (signup)
-export const createUser = (req, res) => {
+export const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   bcrypt
@@ -24,40 +23,32 @@ export const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        res.status(CONFLICT).send({ message: "Email already exists" });
+        next(new ConflictError("Email already exists"));
       } else if (err.name === "ValidationError") {
-        res.status(BAD_REQUEST).send({ message: "Invalid user data" });
+        next(new BadRequestError("Invalid user data"));
       } else {
-        console.error(err);
-        res.status(SERVER_ERROR).send({ message: "Server error" });
+        next(new InternalServerError());
       }
     });
 };
 
-// Login user (POST /signin)
-export const login = (req, res) => {
+export const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "Email and password are required" });
+    return next(new BadRequestError("Email and password are required"));
   }
 
   User.findOne({ email })
     .select("+password")
     .then((user) => {
       if (!user) {
-        return res
-          .status(UNAUTHORIZED)
-          .send({ message: "Incorrect email or password" });
+        throw new UnauthorizedError("Incorrect email or password");
       }
 
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
-          return res
-            .status(UNAUTHORIZED)
-            .send({ message: "Incorrect email or password" });
+          throw new UnauthorizedError("Incorrect email or password");
         }
 
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
@@ -68,28 +59,32 @@ export const login = (req, res) => {
       });
     })
     .catch((err) => {
-      console.error(err);
-      res.status(SERVER_ERROR).send({ message: "Server error" });
+      if (err instanceof UnauthorizedError || err instanceof BadRequestError) {
+        next(err);
+      } else {
+        next(new InternalServerError());
+      }
     });
 };
 
-// Get current user (GET /users/me)
-export const getCurrentUser = (req, res) => {
+export const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND).send({ message: "User not found" });
+        throw new NotFoundError("User not found");
       }
       res.send(user);
     })
     .catch((err) => {
-      console.error(err);
-      res.status(SERVER_ERROR).send({ message: "Server error" });
+      if (err instanceof NotFoundError) {
+        next(err);
+      } else {
+        next(new InternalServerError());
+      }
     });
 };
 
-// Update user profile (PATCH /users/me)
-export const updateUser = (req, res) => {
+export const updateUser = (req, res, next) => {
   const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -99,16 +94,17 @@ export const updateUser = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND).send({ message: "User not found" });
+        throw new NotFoundError("User not found");
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        res.status(BAD_REQUEST).send({ message: "Invalid data for update" });
+        next(new BadRequestError("Invalid data for update"));
+      } else if (err instanceof NotFoundError) {
+        next(err);
       } else {
-        console.error(err);
-        res.status(SERVER_ERROR).send({ message: "Server error" });
+        next(new InternalServerError());
       }
     });
 };
