@@ -16,15 +16,26 @@ const { PORT = 3001 } = process.env;
 
 const app = express();
 
+const allowedOrigins = [
+  "https://mywtwr.crabdance.com",
+  "https://www.mywtwr.crabdance.com",
+  "http://localhost:3000",
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
-app.use(cors());
 app.use(helmet());
 app.use(express.json());
-
 app.use(requestLogger);
 
 app.get("/crash-test", () => {
